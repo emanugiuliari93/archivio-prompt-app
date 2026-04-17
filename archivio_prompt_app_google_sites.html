@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Archivio Prompt Didattici</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --panel: #ffffff;
+      --panel-2: #f0f4ff;
+      --text: #18212f;
+      --muted: #5d6b82;
+      --line: #dbe3f0;
+      --accent: #2357d8;
+      --accent-2: #173b94;
+      --success: #127a4a;
+      --shadow: 0 12px 30px rgba(24, 33, 47, 0.08);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; font-family: Inter, Arial, sans-serif; background: var(--bg); color: var(--text); }
+    body { min-height: 100vh; }
+
+    .app {
+      max-width: 1360px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #1d4ed8 0%, #193a94 100%);
+      color: #fff;
+      padding: 28px;
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      margin-bottom: 20px;
+    }
+
+    .hero h1 {
+      margin: 0 0 10px;
+      font-size: 2rem;
+      line-height: 1.15;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 900px;
+      line-height: 1.55;
+      color: rgba(255,255,255,0.92);
+    }
+
+    .topbar {
+      display: grid;
+      grid-template-columns: 2fr 1.1fr 1.1fr auto auto;
+      gap: 12px;
+      margin-bottom: 18px;
+      align-items: stretch;
+    }
+
+    .field, .button, select {
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      min-height: 48px;
+      font-size: 0.97rem;
+    }
+
+    .field, select {
+      width: 100%;
+      padding: 12px 14px;
+      color: var(--text);
+    }
+
+    .button {
+      padding: 12px 16px;
+      font-weight: 600;
+      cursor: pointer;
+      color: var(--accent);
+      transition: 0.2s ease;
+    }
+
+    .button:hover {
+      transform: translateY(-1px);
+      border-color: #bfd0ff;
+      background: #f7faff;
+    }
+
+    .button.primary {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+
+    .button.primary:hover {
+      background: var(--accent-2);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 18px;
+    }
+
+    .sidebar, .mainpanel, .editor, .help {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .sidebar {
+      padding: 16px;
+      position: sticky;
+      top: 18px;
+      align-self: start;
+      max-height: calc(100vh - 36px);
+      overflow: auto;
+    }
+
+    .section-title {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      margin: 0 0 10px;
+      font-weight: 700;
+    }
+
+    .chip-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    .chip {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--text);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .chip.active, .chip:hover {
+      background: #eaf1ff;
+      border-color: #b8caf9;
+      color: var(--accent-2);
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .stat {
+      background: var(--panel-2);
+      border: 1px solid #d6e2ff;
+      border-radius: 16px;
+      padding: 12px;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 1.25rem;
+      margin-bottom: 4px;
+    }
+
+    .quick-actions {
+      display: grid;
+      gap: 8px;
+    }
+
+    .quick-actions .button {
+      text-align: left;
+    }
+
+    .mainpanel {
+      padding: 16px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: #fff;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      min-height: 290px;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: start;
+      margin-bottom: 10px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #eef4ff;
+      color: var(--accent-2);
+      border: 1px solid #d7e4ff;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      padding: 6px 10px;
+      font-weight: 600;
+    }
+
+    .card h3 {
+      margin: 0;
+      font-size: 1.04rem;
+      line-height: 1.3;
+    }
+
+    .meta {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-bottom: 12px;
+      line-height: 1.45;
+    }
+
+    .preview {
+      white-space: pre-wrap;
+      background: #f8faff;
+      border: 1px solid #e4ebf7;
+      border-radius: 14px;
+      padding: 12px;
+      font-size: 0.9rem;
+      line-height: 1.45;
+      color: #243045;
+      flex: 1;
+      overflow: auto;
+      max-height: 220px;
+    }
+
+    .card-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .card-actions .button {
+      min-height: 40px;
+      padding: 10px 12px;
+      font-size: 0.9rem;
+    }
+
+    .editor-wrap {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .editor, .help {
+      padding: 16px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 380px;
+      resize: vertical;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      padding: 14px;
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 0.93rem;
+      line-height: 1.5;
+      color: var(--text);
+      background: #fcfdff;
+    }
+
+    .small {
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .toast {
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      background: #122033;
+      color: white;
+      padding: 12px 16px;
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(8px);
+      transition: 0.25s ease;
+      z-index: 1000;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .empty {
+      border: 1px dashed var(--line);
+      border-radius: 18px;
+      padding: 28px;
+      text-align: center;
+      background: #fff;
+      color: var(--muted);
+    }
+
+    @media (max-width: 1080px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; max-height: none; }
+      .editor-wrap { grid-template-columns: 1fr; }
+      .topbar { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 760px) {
+      .app { padding: 14px; }
+      .hero { padding: 20px; }
+      .hero h1 { font-size: 1.55rem; }
+      .topbar { grid-template-columns: 1fr; }
+      .grid { grid-template-columns: 1fr; }
+      .stats { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <section class="hero">
+      <h1>Archivio Prompt Didattici</h1>
+      <p>Web app pronta per l’uso, pensata per organizzare, cercare, filtrare, copiare e personalizzare i prompt operativi emersi dal tuo lavoro. È adatta all’incorporamento in Google Sites tramite URL pubblico o iframe.</p>
+    </section>
+
+    <div class="topbar">
+      <input id="searchInput" class="field" type="text" placeholder="Cerca per titolo, categoria, obiettivo o parole chiave..." />
+      <select id="categorySelect">
+        <option value="all">Tutte le categorie</option>
+      </select>
+      <select id="typeSelect">
+        <option value="all">Tutti i tipi</option>
+        <option value="base">Prompt base</option>
+        <option value="trasformazione">Trasformazione</option>
+        <option value="revisione">Revisione</option>
+        <option value="pacchetto">Pacchetto</option>
+        <option value="meta">Meta-prompt</option>
+      </select>
+      <button class="button" id="copyAllVisibleBtn">Copia visibili</button>
+      <button class="button primary" id="resetBtn">Reset filtri</button>
+    </div>
+
+    <div class="layout">
+      <aside class="sidebar">
+        <p class="section-title">Navigazione rapida</p>
+        <div class="chip-list" id="quickCategoryChips"></div>
+
+        <div class="stats">
+          <div class="stat">
+            <strong id="totalPrompts">0</strong>
+            <span class="small">Prompt totali</span>
+          </div>
+          <div class="stat">
+            <strong id="visiblePrompts">0</strong>
+            <span class="small">Prompt visibili</span>
+          </div>
+        </div>
+
+        <p class="section-title">Azioni</p>
+        <div class="quick-actions">
+          <button class="button" id="openPrecisionInstruction">Apri istruzione di precisione</button>
+          <button class="button" id="copyPrecisionInstruction">Copia istruzione di precisione</button>
+          <button class="button" id="exportJsonBtn">Esporta archivio JSON</button>
+          <button class="button" id="downloadHtmlBtn">Scarica HTML corrente</button>
+        </div>
+
+        <p class="section-title" style="margin-top:18px;">Istruzione fissa ad alta precisione</p>
+        <div class="preview" id="precisionPreview"></div>
+      </aside>
+
+      <main>
+        <section class="mainpanel">
+          <div id="promptGrid" class="grid"></div>
+          <div id="emptyState" class="empty" style="display:none;">Nessun prompt corrisponde ai filtri selezionati.</div>
+        </section>
+
+        <div class="editor-wrap">
+          <section class="editor">
+            <p class="section-title">Editor rapido</p>
+            <p class="small">Clicca su “Modifica” in una scheda per portare qui il prompt, personalizzarlo e copiarlo. Le modifiche restano locali nel browser.</p>
+            <textarea id="editorArea" placeholder="Seleziona un prompt o incollane uno qui..."></textarea>
+            <div class="card-actions" style="margin-top:12px;">
+              <button class="button primary" id="copyEditorBtn">Copia testo editor</button>
+              <button class="button" id="clearEditorBtn">Pulisci editor</button>
+            </div>
+          </section>
+
+          <section class="help">
+            <p class="section-title">Come incorporarla in Google Sites</p>
+            <div class="small">
+              <p><strong>Metodo consigliato:</strong> pubblica questo file HTML su un hosting statico che generi un URL pubblico HTTPS, poi in Google Sites usa <em>Inserisci → Incorpora → URL</em>.</p>
+              <p><strong>Alternative pratiche:</strong> GitHub Pages, Netlify, Cloudflare Pages oppure Google Drive/Apps Script se già li usi come supporto.</p>
+              <p><strong>Perché non basta il file locale:</strong> Google Sites incorpora in modo stabile soprattutto contenuti pubblici raggiungibili via URL.</p>
+              <p><strong>Uso interno:</strong> puoi anche aprire l’HTML direttamente nel browser come archivio personale offline.</p>
+              <p><strong>Suggerimento operativo:</strong> se vuoi, posso anche trasformare questa app in una versione con logo, colori personalizzati, esportazione in CSV o area per aggiungere nuovi prompt dall’interfaccia.</p>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const precisionInstruction = `Lavora in modo rigoroso e verificabile. Non inventare dati, titoli, autori, riferimenti o dettagli mancanti. Se un elemento non è certo, dichiaralo esplicitamente. Mantieni un tono professionale e neutro. Organizza la risposta in modo chiaro, con sezioni ben distinte e facilmente riutilizzabili nella pratica didattica.`;
+
+    const prompts = [
+      {
+        id: 'xl7rl4',
+        title: 'Lezione standard disciplinare',
+        category: 'Progettazione lezioni',
+        type: 'base',
+        description: 'Per progettare una lezione applicabile subito in classe.',
+        keywords: ['lezione', 'italiano', 'storia', 'progettazione', 'classe'],
+        prompt: `Progetta una lezione di [durata] per una classe [classe, età, indirizzo] su [argomento].\n\nDisciplina: [italiano/storia/altro]\nContesto classe: [livello medio, criticità, partecipazione, eventuali fragilità]\nPrerequisiti: [indicarli]\nObiettivi di apprendimento: [indicarli]\nVincoli reali: [tempo, strumenti disponibili, presenza di studenti L2 o BES, ecc.]\n\nVoglio una progettazione concreta e realistica, articolata in:\n1. obiettivi\n2. prerequisiti\n3. scansione temporale fase per fase\n4. attività del docente\n5. attività degli studenti\n6. materiali necessari\n7. verifica finale o controllo rapido della comprensione\n8. criticità prevedibili\n9. possibili adattamenti per studenti in difficoltà o L2\n\nEvita soluzioni generiche o poco realistiche. Il piano deve essere applicabile in classe subito.`
+      },
+      {
+        id: 'yctwsz',
+        title: 'Lezione laboratoriale di 2 ore',
+        category: 'Progettazione lezioni',
+        type: 'base',
+        description: 'Per attività strutturate con fasi, produzione e restituzione.',
+        keywords: ['laboratorio', '2 ore', 'gruppi', 'produzione'],
+        prompt: `Progetta una lezione laboratoriale di 2 ore per una classe [classe] su [argomento].\n\nObiettivo principale: [x]\nObiettivi secondari: [x]\nNumero studenti: [x]\nOrganizzazione desiderata: [gruppi/coppie/lavoro individuale]\nVincoli: [rumorosità, tempi stretti, livello eterogeneo, ecc.]\n\nStruttura la proposta in:\n- apertura e aggancio iniziale\n- fase operativa centrale\n- produzione o elaborazione degli studenti\n- restituzione finale\n- verifica rapida conclusiva\n\nPer ogni fase indica:\n- durata\n- consegna\n- ruolo del docente\n- ruolo degli studenti\n- prodotto atteso\n\nAggiungi anche una variante semplificata per una classe meno autonoma.`
+      },
+      {
+        id: 'gzfz80',
+        title: 'Lezione breve di recupero o consolidamento',
+        category: 'Progettazione lezioni',
+        type: 'base',
+        description: 'Per recuperare nuclei essenziali in tempi ridotti.',
+        keywords: ['recupero', 'consolidamento', 'breve', 'ripasso'],
+        prompt: `Progetta una lezione breve di recupero/consolidamento di [durata] su [argomento] per una classe [classe].\n\nLa lezione deve servire a:\n- chiarire i nuclei essenziali\n- verificare i punti deboli\n- rinforzare le conoscenze minime\n\nOrganizza la risposta in:\n1. nuclei essenziali da recuperare\n2. attività iniziale di riattivazione\n3. esercizio guidato\n4. esercizio autonomo\n5. controllo finale rapido\n6. criteri per capire se il recupero è riuscito\n\nMantieni un livello concreto, scolastico e immediatamente applicabile.`
+      },
+      {
+        id: 'hkj8vn',
+        title: 'Verifica completa con griglia e soluzione',
+        category: 'Verifiche e valutazione',
+        type: 'base',
+        description: 'Per ottenere verifica, griglia, soluzione e versione facilitata.',
+        keywords: ['verifica', 'valutazione', 'griglia', 'soluzione'],
+        prompt: `Costruisci una verifica su [argomento] per una classe [classe, età, indirizzo].\n\nObiettivi verificati: [x]\nTempo a disposizione: [x]\nLivello della classe: [medio/fragile/buono]\nVincoli: [presenza di studenti L2, necessità di domande semplici, ecc.]\n\nLa verifica deve includere:\n1. istruzioni per gli studenti\n2. esercizi diversificati e coerenti con gli obiettivi\n3. distribuzione equilibrata della difficoltà\n4. griglia di valutazione chiara\n5. soluzione completa per il docente\n6. versione facilitata, se opportuna\n\nEvita quesiti ambigui o troppo linguistici se l’obiettivo è disciplinare. Mantieni la verifica realistica per il livello indicato.`
+      },
+      {
+        id: 'fb77l9',
+        title: 'Verifica semplificata o a risposta chiusa',
+        category: 'Verifiche e valutazione',
+        type: 'base',
+        description: 'Per studenti con difficoltà linguistiche o L2.',
+        keywords: ['verifica semplificata', 'l2', 'scelta multipla', 'chiusa'],
+        prompt: `Prepara una verifica semplificata su [argomento] per una classe [classe], adatta anche a studenti con difficoltà linguistiche o L2.\n\nVoglio:\n- domande chiare e brevi\n- lessico controllato\n- prevalenza di risposta chiusa\n- eventuali immagini o supporti suggeriti\n- correzione finale per il docente\n\nOrganizza il materiale in:\n1. consegna iniziale\n2. esercizi\n3. chiave di correzione\n4. indicazioni su quali obiettivi minimi vengono verificati`
+      },
+      {
+        id: 'g58i9d',
+        title: 'Revisione critica di una verifica',
+        category: 'Verifiche e valutazione',
+        type: 'revisione',
+        description: 'Per analizzare ambiguità, squilibri e adeguatezza.',
+        keywords: ['revisione', 'verifica', 'analisi critica'],
+        prompt: `Analizza criticamente questa verifica come farebbe un docente esperto e severo.\n\nValuta:\n- coerenza con gli obiettivi\n- equilibrio della difficoltà\n- chiarezza delle consegne\n- eventuali ambiguità\n- peso eccessivo della competenza linguistica rispetto a quella disciplinare\n- presenza di richieste troppo facili o troppo difficili\n- adeguatezza al tempo previsto\n\nAlla fine proponi una versione migliorata, motivando le modifiche più importanti.`
+      },
+      {
+        id: 'gjvxkl',
+        title: 'Semplificazione di testo disciplinare per L2',
+        category: 'Adattamento L2',
+        type: 'base',
+        description: 'Per testo semplificato, glossario e attività guidate.',
+        keywords: ['L2', 'semplificazione', 'glossario', 'comprensione'],
+        prompt: `Adatta il seguente materiale per uno studente L2 di livello [pre-A1/A1/A2/B1].\n\nTesto di partenza: [incollare testo]\n\nObiettivo: mantenere i contenuti essenziali, riducendo la complessità linguistica.\n\nProduci:\n1. testo semplificato\n2. glossario delle parole chiave\n3. 5 domande di comprensione a risposta chiusa o molto guidata\n4. 3 esercizi semplici di consolidamento\n5. eventuali suggerimenti visivi o lessicali di supporto\n\nUsa frasi brevi, sintassi lineare, lessico trasparente. Non banalizzare i concetti, ma rendili accessibili.`
+      },
+      {
+        id: '32tiar',
+        title: 'Doppia versione standard + L2',
+        category: 'Adattamento L2',
+        type: 'trasformazione',
+        description: 'Per creare due versioni parallele dello stesso contenuto.',
+        keywords: ['doppia versione', 'parallela', 'L2'],
+        prompt: `Partendo da questo contenuto su [argomento], crea due versioni parallele:\n- una versione standard per la classe\n- una versione facilitata per studenti L2 livello [x]\n\nMantieni la stessa struttura concettuale, ma differenzia:\n- lessico\n- lunghezza delle frasi\n- densità informativa\n- tipo di domande finali\n\nRestituisci il materiale in modo affiancato, così da poter confrontare le due versioni.`
+      },
+      {
+        id: '8d0uux',
+        title: 'Micro-verifica L2 minima',
+        category: 'Adattamento L2',
+        type: 'base',
+        description: 'Per controllare apprendimenti minimi con formato molto guidato.',
+        keywords: ['micro-verifica', 'L2', 'minimi'],
+        prompt: `Crea una micro-verifica per studente L2 livello [x] su [argomento].\n\nVoglio:\n- massimo [numero] esercizi\n- domande molto semplici\n- verifica dei concetti fondamentali\n- prevalenza di scelta multipla, vero/falso, associazione\n- correzione finale\n\nIndica anche quali apprendimenti minimi vengono controllati.`
+      },
+      {
+        id: '7tmlim',
+        title: 'Attività a gruppi con ruoli',
+        category: 'Laboratorio e cooperativo',
+        type: 'base',
+        description: 'Per organizzare gruppi, ruoli, prodotto finale e valutazione.',
+        keywords: ['gruppi', 'ruoli', 'cooperativo', 'laboratorio'],
+        prompt: `Progetta un’attività di lavoro a gruppi su [argomento] per una classe [classe] di [numero] studenti.\n\nDurata: [x]\nObiettivo didattico: [x]\nProdotto finale richiesto: [x]\n\nOrganizza la proposta in:\n1. composizione dei gruppi\n2. assegnazione dei ruoli\n3. consegna per i gruppi\n4. materiali o fonti da usare\n5. tempi di lavoro\n6. restituzione finale\n7. criteri di valutazione del lavoro di gruppo\n8. possibili criticità organizzative e relative soluzioni\n\nMantieni una struttura concreta, compatibile con una classe reale.`
+      },
+      {
+        id: '32dqt9',
+        title: 'Laboratorio comparativo tra testi o documenti',
+        category: 'Laboratorio e cooperativo',
+        type: 'base',
+        description: 'Per confronto guidato tra testi, autori, documenti o temi.',
+        keywords: ['confronto', 'testi', 'documenti', 'comparativo'],
+        prompt: `Progetta un laboratorio comparativo su [testi/documenti/autori/temi] per una classe [classe].\n\nVoglio che gli studenti lavorino in gruppi per far emergere:\n- elementi comuni\n- differenze\n- parole chiave\n- implicazioni storiche o letterarie\n\nStruttura il lavoro con:\n1. consegna iniziale\n2. scheda guida per l’analisi\n3. domande per il confronto\n4. modalità di restituzione\n5. sintesi finale del docente`
+      },
+      {
+        id: 'oswpwz',
+        title: 'Attività cooperativa per classe poco autonoma',
+        category: 'Laboratorio e cooperativo',
+        type: 'base',
+        description: 'Per classi con attenzione discontinua e forte bisogno di guida.',
+        keywords: ['classe fragile', 'cooperativo', 'gestione', 'guida'],
+        prompt: `Progetta un’attività cooperativa su [argomento] per una classe [classe] poco autonoma.\n\nVincoli:\n- attenzione discontinua\n- rischio dispersione\n- tempi da scandire bene\n- bisogno di consegne molto chiare\n\nPer ogni fase indica:\n- cosa devono fare gli studenti\n- cosa deve controllare il docente\n- come semplificare la gestione\n- come evitare tempi morti\n\nAggiungi una versione ancora più guidata se la classe dovesse rispondere poco.`
+      },
+      {
+        id: '9i37zf',
+        title: 'Da contenuto a scaletta slide',
+        category: 'Presentazioni e multimedia',
+        type: 'trasformazione',
+        description: 'Per convertire contenuti in una presentazione chiara e didattica.',
+        keywords: ['slide', 'presentazione', 'scaletta'],
+        prompt: `Trasforma questo contenuto su [argomento] in una scaletta per una presentazione destinata a una classe [classe].\n\nVoglio:\n- titolo di ogni slide\n- punti essenziali per slide\n- eventuali immagini o mappe concettuali da inserire\n- equilibrio tra testo e oralità\n- sequenza didatticamente chiara\n\nLa presentazione deve essere adatta a [numero] slide circa e pensata per un uso realmente scolastico.`
+      },
+      {
+        id: 'am9rxv',
+        title: 'Presentazione docente',
+        category: 'Presentazioni e multimedia',
+        type: 'base',
+        description: 'Per preparare una struttura slide per slide ad uso docente.',
+        keywords: ['docente', 'slide', 'lezione'],
+        prompt: `Prepara una struttura completa per una presentazione del docente su [argomento] per una classe [classe].\n\nOrganizza il materiale slide per slide con:\n1. titolo\n2. contenuto sintetico\n3. eventuale domanda da porre alla classe\n4. indicazioni visive consigliate\n5. nota per il docente, se utile\n\nMantieni un taglio didattico, non accademico.`
+      },
+      {
+        id: '9gbztb',
+        title: 'Consegna per presentazione studenti',
+        category: 'Presentazioni e multimedia',
+        type: 'base',
+        description: 'Per assegnare presentazioni strutturate ai gruppi.',
+        keywords: ['studenti', 'presentazione', 'consegna', 'griglia'],
+        prompt: `Costruisci una consegna per gruppi di studenti che dovranno realizzare una presentazione su [argomento].\n\nLa consegna deve includere:\n- obiettivo del lavoro\n- struttura minima della presentazione\n- numero indicativo di slide\n- criteri di qualità\n- errori da evitare\n- griglia di valutazione sintetica\n\nScrivi in modo chiaro e adatto a studenti di [classe].`
+      },
+      {
+        id: '0flh9i',
+        title: 'Escape room didattica',
+        category: 'Gamification',
+        type: 'base',
+        description: 'Per progettare stanze, prove, indizi e soluzione finale.',
+        keywords: ['escape room', 'gamification', 'prove'],
+        prompt: `Progetta un’escape room didattica su [argomento] per una classe [classe].\n\nObiettivo: [ripasso/introduzione/consolidamento]\nNumero di stanze o prove: [x]\nDurata complessiva: [x]\nProdotto finale o soluzione finale: [x]\n\nPer ogni prova voglio:\n1. obiettivo disciplinare\n2. consegna\n3. indizio o materiale di partenza\n4. soluzione corretta\n5. errore tipico prevedibile\n6. passaggio alla prova successiva\n\nAlla fine aggiungi:\n- logica generale del percorso\n- competenze coinvolte\n- suggerimenti pratici per la realizzazione`
+      },
+      {
+        id: 'xb5lwp',
+        title: 'Gioco di ripasso rapido',
+        category: 'Gamification',
+        type: 'base',
+        description: 'Per rinforzo, pre-verifica o recupero in forma di gioco.',
+        keywords: ['gioco', 'ripasso', 'pre-verifica'],
+        prompt: `Crea un’attività gamificata di ripasso su [argomento] per una classe [classe].\n\nDurata: [x]\nFinalità: [rinforzo/pre-verifica/recupero]\nVincoli: [classe vivace, strumenti limitati, ecc.]\n\nVoglio:\n- regole del gioco\n- materiali necessari\n- domande o prove\n- modalità di punteggio\n- variante più semplice\n- variante più sfidante`
+      },
+      {
+        id: '0ktasa',
+        title: 'Avvio di ricerca rigorosa',
+        category: 'Ricerca e dossier',
+        type: 'base',
+        description: 'Per impostare perimetro, domande, snodi e limiti documentari.',
+        keywords: ['ricerca', 'dossier', 'storiografia', 'metodo'],
+        prompt: `Imposta una ricerca su [tema] con criteri rigorosi.\n\nVoglio che il lavoro sia organizzato in:\n1. perimetro preciso del tema\n2. domande di ricerca principali\n3. snodi storiografici o interpretativi\n4. autori o opere di riferimento\n5. problemi metodologici\n6. struttura proposta del lavoro\n7. elementi che richiedono verifica ulteriore\n\nDistingui sempre tra:\n- dati certi e consolidati\n- questioni controverse\n- aree in cui mancano riscontri sufficienti\n\nNon completare con inferenze non documentate.`
+      },
+      {
+        id: 'h5d0yc',
+        title: 'Redazione di sezione di dossier',
+        category: 'Ricerca e dossier',
+        type: 'base',
+        description: 'Per scrivere una sezione ordinata e controllata.',
+        keywords: ['sezione', 'dossier', 'redazione'],
+        prompt: `Redigi una sezione di dossier su [tema/sottotema] con taglio rigoroso e documentato.\n\nLa sezione deve contenere:\n1. inquadramento sintetico\n2. nuclei concettuali principali\n3. eventuali interpretazioni storiografiche rilevanti\n4. problemi aperti o limiti del quadro\n5. sintesi finale\n\nEvita formulazioni assertive se mancano riscontri chiari. Mantieni una prosa leggibile ma scientificamente controllata.`
+      },
+      {
+        id: '3x7888',
+        title: 'Controllo critico di testo di ricerca',
+        category: 'Ricerca e dossier',
+        type: 'revisione',
+        description: 'Per individuare salti logici, genericità e punti poco fondati.',
+        keywords: ['controllo', 'ricerca', 'rigore', 'salti logici'],
+        prompt: `Analizza questo testo di ricerca e individua:\n- affermazioni non sufficientemente fondate\n- passaggi troppo generici\n- eventuali salti logici\n- ripetizioni\n- problemi di struttura\n- punti da distinguere meglio tra fatto, interpretazione e ipotesi\n\nPoi proponi una riscrittura più rigorosa.`
+      },
+      {
+        id: '1to6a9',
+        title: 'Comunicazione scolastica alle famiglie',
+        category: 'Comunicazione istituzionale',
+        type: 'base',
+        description: 'Per avvisi, richieste o comunicazioni ufficiali.',
+        keywords: ['famiglie', 'comunicazione', 'istituzionale'],
+        prompt: `Scrivi una comunicazione scolastica destinata alle famiglie su [argomento].\n\nTono richiesto: professionale, chiaro, istituzionale\nObiettivo: [informare/chiedere/comunicare una scadenza/spiegare un’attività]\nVincoli: [brevità, chiarezza, evitare tecnicismi, ecc.]\n\nVoglio un testo:\n- ordinato\n- facilmente leggibile\n- privo di ambiguità\n- adatto a una comunicazione ufficiale scolastica`
+      },
+      {
+        id: '1ftgnm',
+        title: 'Traduzione funzionale per famiglie L2',
+        category: 'Comunicazione istituzionale',
+        type: 'base',
+        description: 'Per traduzioni ufficiali chiare e consegnabili.',
+        keywords: ['traduzione', 'inglese', 'famiglie L2'],
+        prompt: `Traduce in inglese il seguente testo scolastico, mantenendo chiarezza, tono istituzionale e leggibilità per famiglie non italofone.\n\nTesto: [incollare]\n\nObiettivo:\n- traduzione fedele\n- linguaggio semplice ma corretto\n- struttura ordinata\n- adatta alla consegna ufficiale\n\nSe ci sono formule italiane poco trasparenti, rendile in modo funzionale e comprensibile.`
+      },
+      {
+        id: 'ndm411',
+        title: 'Revisione di comunicazione poco chiara',
+        category: 'Comunicazione istituzionale',
+        type: 'revisione',
+        description: 'Per migliorare ordine, precisione e leggibilità.',
+        keywords: ['revisione', 'comunicazione', 'chiarezza'],
+        prompt: `Rivedi questa comunicazione scolastica per migliorarne:\n- chiarezza\n- ordine logico\n- leggibilità\n- precisione delle informazioni\n- tono professionale\n\nPoi riscrivila in una versione pronta da inviare.`
+      },
+      {
+        id: 'y73amo',
+        title: 'Consegna meno copiabile con AI',
+        category: 'Compiti autentici',
+        type: 'base',
+        description: 'Per rendere la consegna più legata al processo e alla classe.',
+        keywords: ['AI', 'consegna', 'autentica', 'anti-copia'],
+        prompt: `Riformula questa consegna didattica in modo che sia meno facilmente svolgibile con un uso meccanico dell’AI.\n\nVoglio una consegna che richieda:\n- collegamento con attività svolte in classe\n- selezione personale delle informazioni\n- rielaborazione\n- eventuale riferimento a materiali specifici usati in aula\n- tracce di processo, non solo prodotto finale\n\nMantieni la consegna realistica e proporzionata per studenti di [classe].`
+      },
+      {
+        id: 'wvz1uh',
+        title: 'Compito autentico',
+        category: 'Compiti autentici',
+        type: 'base',
+        description: 'Per premiare collegamento, comprensione e rielaborazione.',
+        keywords: ['compito autentico', 'rielaborazione', 'valutazione'],
+        prompt: `Progetta un compito autentico su [argomento] per una classe [classe], in modo che premi comprensione, collegamento e rielaborazione personale più che la semplice riproduzione di contenuti.\n\nLa consegna deve includere:\n- obiettivo\n- prodotto richiesto\n- fasi di lavoro\n- criteri di valutazione\n- elementi che rendono il compito poco adatto a una risposta standard generata dall’AI`
+      },
+      {
+        id: 'bnlvy7',
+        title: 'Da lezione a verifica',
+        category: 'Trasformazione e riuso',
+        type: 'trasformazione',
+        description: 'Per derivare una verifica coerente dalla lezione svolta.',
+        keywords: ['trasformazione', 'lezione', 'verifica'],
+        prompt: `Partendo da questa lezione, costruisci una verifica coerente con gli obiettivi effettivamente affrontati in classe.\n\nIncludi:\n- versione standard\n- eventuale versione facilitata\n- griglia di valutazione\n- soluzione docente`
+      },
+      {
+        id: 'mg6cs0',
+        title: 'Da lezione a slide',
+        category: 'Trasformazione e riuso',
+        type: 'trasformazione',
+        description: 'Per passare da una lezione a una presentazione essenziale.',
+        keywords: ['lezione', 'slide', 'trasformazione'],
+        prompt: `Trasforma questa lezione in una presentazione didattica essenziale.\n\nVoglio:\n- sequenza slide\n- contenuto sintetico\n- eventuali domande da porre agli studenti\n- suggerimenti visivi`
+      },
+      {
+        id: 'mm89aj',
+        title: 'Da contenuto standard a versione L2',
+        category: 'Trasformazione e riuso',
+        type: 'trasformazione',
+        description: 'Per ottenere una versione accessibile senza rifare il lavoro.',
+        keywords: ['standard', 'L2', 'trasformazione'],
+        prompt: `Trasforma questo materiale standard in una versione adatta a uno studente L2 livello [x], mantenendo i concetti fondamentali e riducendo la complessità linguistica.`
+      },
+      {
+        id: 'imzyo4',
+        title: 'Da attività complessa a versione minima',
+        category: 'Trasformazione e riuso',
+        type: 'trasformazione',
+        description: 'Per adattare velocemente ad aula fragile o tempo ridotto.',
+        keywords: ['riduzione', 'minima', 'fragile'],
+        prompt: `Riduci questa attività alla sua versione minima essenziale per una classe più fragile o per un tempo ridotto, senza perdere il nucleo didattico.`
+      },
+      {
+        id: 'bopo43',
+        title: 'Da testo lungo a scheda operativa',
+        category: 'Trasformazione e riuso',
+        type: 'trasformazione',
+        description: 'Per ottenere una scheda pronta per gli studenti.',
+        keywords: ['scheda', 'operativa', 'testo'],
+        prompt: `Trasforma questo testo in una scheda operativa per studenti, con:\n- spiegazione essenziale\n- parole chiave\n- esercizi\n- controllo finale`
+      },
+      {
+        id: 'juxbj3',
+        title: 'Revisione severa di una lezione',
+        category: 'Revisione professionale',
+        type: 'revisione',
+        description: 'Per analizzare tempi, attenzione e allineamento didattico.',
+        keywords: ['revisione', 'lezione', 'severa'],
+        prompt: `Analizza questa lezione come farebbe un docente esperto e molto esigente.\n\nIndividua:\n- passaggi deboli\n- tempi poco realistici\n- punti di possibile calo attentivo\n- eccessi di spiegazione frontale\n- criticità organizzative\n- eventuali disallineamenti tra obiettivi, attività e verifica\n\nPoi proponi una versione migliorata.`
+      },
+      {
+        id: 'lmama2',
+        title: 'Revisione di coerenza annuale',
+        category: 'Revisione professionale',
+        type: 'revisione',
+        description: 'Per controllare progressione di contenuti, metodo e valutazione.',
+        keywords: ['coerenza annuale', 'progressione', 'curricolo'],
+        prompt: `Analizza queste attività o unità e verifica se hanno una progressione coerente sul piano:\n- contenutistico\n- cognitivo\n- metodologico\n- valutativo\n\nSegnala squilibri, ridondanze, vuoti o salti e proponi una riorganizzazione.`
+      },
+      {
+        id: 'sm4b19',
+        title: 'Controllo del carico cognitivo',
+        category: 'Revisione professionale',
+        type: 'revisione',
+        description: 'Per alleggerire densità e segmentare i passaggi.',
+        keywords: ['carico cognitivo', 'densità', 'segmentazione'],
+        prompt: `Valuta questo materiale dal punto di vista del carico cognitivo per studenti di [classe].\n\nIndica:\n- dove il testo o la consegna è troppo denso\n- quali passaggi vanno segmentati\n- quali supporti faciliterebbero la comprensione\n- come rendere il tutto più gestibile senza impoverire i contenuti`
+      },
+      {
+        id: 'mz4ww4',
+        title: 'Pacchetto unità didattica completo',
+        category: 'Pacchetti completi',
+        type: 'pacchetto',
+        description: 'Per ottenere lezione, materiali, verifica, griglia e adattamenti.',
+        keywords: ['pacchetto', 'unità didattica', 'completo'],
+        prompt: `Prepara un pacchetto didattico completo su [argomento] per una classe [classe].\n\nIl pacchetto deve includere:\n1. progettazione della lezione o dell’unità\n2. materiale per gli studenti\n3. attività o esercizio applicativo\n4. verifica finale\n5. griglia di valutazione\n6. versione facilitata o L2, se opportuna\n7. scaletta per eventuale presentazione\n8. note operative per il docente\n\nMantieni coerenza tra tutte le parti e rendi il pacchetto immediatamente utilizzabile.`
+      },
+      {
+        id: '2cntk5',
+        title: 'Pacchetto completo per laboratorio',
+        category: 'Pacchetti completi',
+        type: 'pacchetto',
+        description: 'Per avere consegna, schede, rubrica e variante semplificata.',
+        keywords: ['pacchetto', 'laboratorio', 'scheda gruppi'],
+        prompt: `Crea un pacchetto completo per un laboratorio su [argomento] per una classe [classe].\n\nIncludi:\n- obiettivi\n- consegna\n- materiali\n- scheda per gruppi\n- prodotto finale richiesto\n- rubrica di valutazione\n- variante semplificata\n- sintesi finale del docente`
+      },
+      {
+        id: 'frufl3',
+        title: 'Meta-prompt: struttura fissa',
+        category: 'Meta-prompt',
+        type: 'meta',
+        description: 'Per ottenere risposte organizzate e riutilizzabili.',
+        keywords: ['meta', 'struttura', 'sezioni'],
+        prompt: `Organizza sempre la risposta in sezioni chiaramente distinguibili e riutilizzabili. Evita blocchi discorsivi troppo lunghi.`
+      },
+      {
+        id: '41o13h',
+        title: 'Meta-prompt: applicabilità reale',
+        category: 'Meta-prompt',
+        type: 'meta',
+        description: 'Per evitare soluzioni astratte o poco realistiche.',
+        keywords: ['meta', 'realistica', 'classe reale'],
+        prompt: `Evita soluzioni astratte o idealizzate. La proposta deve essere compatibile con una classe reale, con tempi scolastici reali e gestione ordinaria d’aula.`
+      },
+      {
+        id: 'pni723',
+        title: 'Meta-prompt: controllo dell’incertezza',
+        category: 'Meta-prompt',
+        type: 'meta',
+        description: 'Per far emergere subito i punti non certi.',
+        keywords: ['meta', 'incertezza', 'verificabilità'],
+        prompt: `Se un dato, riferimento o passaggio non è certo, segnalalo esplicitamente invece di completarlo in modo ipotetico.`
+      },
+      {
+        id: 'fnxv24',
+        title: 'Meta-prompt: doppia versione',
+        category: 'Meta-prompt',
+        type: 'meta',
+        description: 'Per ottenere anche una variante semplificata o guidata.',
+        keywords: ['meta', 'doppia versione', 'semplificata'],
+        prompt: `Dopo la versione standard, aggiungi anche una variante semplificata o più guidata.`
+      },
+      {
+        id: 'e9vh49',
+        title: 'Meta-prompt: output in tabella',
+        category: 'Meta-prompt',
+        type: 'meta',
+        description: 'Per strutturare la risposta in modo operativo.',
+        keywords: ['meta', 'tabella', 'output'],
+        prompt: `Presenta il risultato in tabella con colonne: fase, durata, attività del docente, attività degli studenti, materiali, obiettivo.`
+      }
+    ];
+
+    const searchInput = document.getElementById('searchInput');
+    const categorySelect = document.getElementById('categorySelect');
+    const typeSelect = document.getElementById('typeSelect');
+    const promptGrid = document.getElementById('promptGrid');
+    const emptyState = document.getElementById('emptyState');
+    const totalPrompts = document.getElementById('totalPrompts');
+    const visiblePrompts = document.getElementById('visiblePrompts');
+    const quickCategoryChips = document.getElementById('quickCategoryChips');
+    const editorArea = document.getElementById('editorArea');
+    const toast = document.getElementById('toast');
+    const precisionPreview = document.getElementById('precisionPreview');
+
+    precisionPreview.textContent = precisionInstruction;
+    totalPrompts.textContent = prompts.length;
+
+    const categories = [...new Set(prompts.map(p => p.category))].sort();
+    categories.forEach(category => {
+      const option = document.createElement('option');
+      option.value = category;
+      option.textContent = category;
+      categorySelect.appendChild(option);
+
+      const chip = document.createElement('button');
+      chip.className = 'chip';
+      chip.textContent = category;
+      chip.addEventListener('click', () => {
+        categorySelect.value = category;
+        syncActiveChip(category);
+        render();
+      });
+      quickCategoryChips.appendChild(chip);
+    });
+
+    function syncActiveChip(category) {
+      [...quickCategoryChips.children].forEach(chip => {
+        chip.classList.toggle('active', chip.textContent === category);
+      });
+    }
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add('show');
+      clearTimeout(showToast._timer);
+      showToast._timer = setTimeout(() => toast.classList.remove('show'), 1800);
+    }
+
+    async function copyText(text, okMessage = 'Copiato.') {
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast(okMessage);
+      } catch {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        ta.remove();
+        showToast(okMessage);
+      }
+    }
+
+    function getFilteredPrompts() {
+      const search = searchInput.value.trim().toLowerCase();
+      const category = categorySelect.value;
+      const type = typeSelect.value;
+
+      return prompts.filter(p => {
+        const matchesSearch = !search || [p.title, p.category, p.description, p.prompt, ...(p.keywords || [])]
+          .join(' ')
+          .toLowerCase()
+          .includes(search);
+
+        const matchesCategory = category === 'all' || p.category === category;
+        const matchesType = type === 'all' || p.type === type;
+        return matchesSearch && matchesCategory && matchesType;
+      });
+    }
+
+    function render() {
+      const filtered = getFilteredPrompts();
+      visiblePrompts.textContent = filtered.length;
+      promptGrid.innerHTML = '';
+      emptyState.style.display = filtered.length ? 'none' : 'block';
+
+      filtered.forEach(p => {
+        const card = document.createElement('article');
+        card.className = 'card';
+        card.innerHTML = `
+          <div class="card-header">
+            <div>
+              <div class="badge">${p.type}</div>
+            </div>
+            <div class="small">ID ${p.id}</div>
+          </div>
+          <h3>${p.title}</h3>
+          <div class="meta"><strong>${p.category}</strong><br>${p.description}</div>
+          <div class="preview">${escapeHtml(p.prompt)}</div>
+          <div class="card-actions">
+            <button class="button primary" data-action="copy">Copia</button>
+            <button class="button" data-action="edit">Modifica</button>
+            <button class="button" data-action="append-precision">+ Istruzione rigore</button>
+          </div>
+        `;
+
+        const [copyBtn, editBtn, appendBtn] = card.querySelectorAll('button');
+        copyBtn.addEventListener('click', () => copyText(p.prompt, 'Prompt copiato.'));
+        editBtn.addEventListener('click', () => {
+          editorArea.value = p.prompt;
+          editorArea.focus();
+          showToast('Prompt caricato nell’editor.');
+        });
+        appendBtn.addEventListener('click', () => {
+          editorArea.value = `${precisionInstruction}\n\n${p.prompt}`;
+          editorArea.focus();
+          showToast('Istruzione di rigore aggiunta nell’editor.');
+        });
+
+        promptGrid.appendChild(card);
+      });
+    }
+
+    function escapeHtml(text) {
+      return text
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    searchInput.addEventListener('input', render);
+    categorySelect.addEventListener('change', () => {
+      syncActiveChip(categorySelect.value);
+      render();
+    });
+    typeSelect.addEventListener('change', render);
+
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      searchInput.value = '';
+      categorySelect.value = 'all';
+      typeSelect.value = 'all';
+      syncActiveChip('');
+      render();
+    });
+
+    document.getElementById('copyAllVisibleBtn').addEventListener('click', () => {
+      const filtered = getFilteredPrompts();
+      const text = filtered.map(p => `# ${p.title}\nCategoria: ${p.category}\nTipo: ${p.type}\nID: ${p.id}\n\n${p.prompt}`).join('\n\n------------------------------\n\n');
+      copyText(text, 'Prompt visibili copiati.');
+    });
+
+    document.getElementById('copyEditorBtn').addEventListener('click', () => {
+      if (!editorArea.value.trim()) {
+        showToast('L’editor è vuoto.');
+        return;
+      }
+      copyText(editorArea.value, 'Testo dell’editor copiato.');
+    });
+
+    document.getElementById('clearEditorBtn').addEventListener('click', () => {
+      editorArea.value = '';
+      showToast('Editor pulito.');
+    });
+
+    document.getElementById('openPrecisionInstruction').addEventListener('click', () => {
+      editorArea.value = precisionInstruction;
+      editorArea.focus();
+      showToast('Istruzione caricata nell’editor.');
+    });
+
+    document.getElementById('copyPrecisionInstruction').addEventListener('click', () => {
+      copyText(precisionInstruction, 'Istruzione di precisione copiata.');
+    });
+
+    document.getElementById('exportJsonBtn').addEventListener('click', () => {
+      const blob = new Blob([JSON.stringify({ precisionInstruction, prompts }, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'archivio-prompt-didattici.json';
+      a.click();
+      URL.revokeObjectURL(a.href);
+      showToast('Archivio JSON esportato.');
+    });
+
+    document.getElementById('downloadHtmlBtn').addEventListener('click', () => {
+      const html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+      const blob = new Blob([html], { type: 'text/html' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'archivio-prompt-didattici.html';
+      a.click();
+      URL.revokeObjectURL(a.href);
+      showToast('HTML scaricato.');
+    });
+
+    render();
+  </script>
+</body>
+</html>
